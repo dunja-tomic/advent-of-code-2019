@@ -1,26 +1,16 @@
-
-def getValue(mode, imm, pos):
-    # position mode
-    if mode == 0:
-        return int(pos)
-
-    # immediate mode
-    elif mode == 1:
-        return int(imm)
-
-
 def part1():
     filepath = "day5.in"
     with open(filepath) as fp:
         arr = fp.readline().strip().split(',')
         arr = [int(x) for x in arr]
-
         posn = 0
 
         while 1:
             op = format(arr[posn], '05d')
-            print("posn: " + str(posn))
-            print("op: " + str(op))
+
+            # Note: 
+            # If mode is 0, param is in position mode
+            # If mode is 1, param is in immediate mode
 
             # mode of 3rd parameter
             A = int(op[0])
@@ -31,31 +21,75 @@ def part1():
             # opcode
             DE = int(op[3] + op[4])
 
-            # print(DE)
             # Add
             if DE == 1:
-                arr[arr[posn + 3]] = getValue(C, arr[posn + 1], arr[arr[posn + 1]]) + getValue(B, arr[posn + 2], arr[arr[posn + 2]])
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                arr[arr[posn + 3]] = param1 + param2
                 posn += 4
             
             # Multiply
             elif DE == 2:
-                arr[arr[posn + 3]] = getValue(C, posn + 1, arr[arr[posn + 1]]) * getValue(B, posn + 2, arr[arr[posn + 2]])
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                arr[arr[posn + 3]] = param1 * param2
                 posn += 4
 
             # Read input
             elif DE == 3:
-                val = input("Input a value: --> ")
+                val = input("Input a value: ")
                 arr[arr[posn + 1]] = int(val)
                 posn += 2
 
             # Output
             elif DE == 4:
-                print("Output: " + str(arr[arr[posn + 1]]))
+                param = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                print("Output: " + str(param))
                 posn += 2
 
+            # Part 2:
+
+            # Jump if true
+            elif DE == 5:
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                posn = param2 if param1 else posn + 3
+            
+            # Jump if false
+            elif DE == 6:
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                posn = param2 if not param1 else posn + 3
+
+            # Less than
+            elif DE == 7:
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                arr[arr[posn + 3]] = param1 < param2
+                posn += 4
+
+            # Equals
+            elif DE == 8:
+                param1 = arr[arr[posn + 1]] if C == 0 else arr[posn + 1]
+                param2 = arr[arr[posn + 2]] if B == 0 else arr[posn + 2]
+
+                arr[arr[posn + 3]] = param1 == param2
+
+                posn += 4
+
+            # Terminate program
             elif DE == 99:
+                break
+
+            # Terminate program in case of a goof
+            else:
+                print("Unrecognized opcode: " + str(DE))
                 break
 
 if __name__ == '__main__':
     part1()
-    # part2()
