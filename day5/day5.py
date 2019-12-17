@@ -1,5 +1,5 @@
 def part1():
-    filepath = "day5.in"
+    filepath = "day7.in"
     with open(filepath) as fp:
         arr = fp.readline().strip().split(',')
         arr = [int(x) for x in arr]
